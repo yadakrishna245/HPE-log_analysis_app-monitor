@@ -85,10 +85,10 @@ jobs:
           import json
           from datetime import datetime
           
+          # Update JSON
           with open('user_registrations.json', 'r') as f:
               reg = json.load(f)
           
-          # Check if user already registered (by email)
           email = "${{ github.event.client_payload.email }}"
           existing = [r for r in reg["registrations"] if r.get("email") == email]
           
@@ -107,7 +107,19 @@ jobs:
           with open('user_registrations.json', 'w') as f:
               json.dump(reg, f, indent=2)
           
-          print(f"👤 User registered: {email}")
+          # Update USERS.md table
+          header = "# 👤 Registered Users\n\n"
+          header += "| # | Name | Email | Mobile | License Key | Domain | Registered At |\n"
+          header += "|---|------|-------|--------|-------------|--------|---------------|\n"
+          rows = ""
+          for i, u in enumerate(reg["registrations"], 1):
+              rows += f"| {i} | {u['name']} | {u['email']} | {u['mobile']} | `{u['license_key']}` | {u['domain']} | {u['registered_at']} |\n"
+          footer = f"\n---\n**Total Users: {len(reg['registrations'])}** | *Auto-updated by GitHub Actions*\n"
+          
+          with open('USERS.md', 'w') as f:
+              f.write(header + rows + footer)
+          
+          print(f"👤 User registered: {email} (Total: {len(reg['registrations'])})")
           EOF2
           fi
 
@@ -115,7 +127,7 @@ jobs:
         run: |
           git config user.name "Access Monitor Bot"
           git config user.email "monitor@logsherlock.pro"
-          git add access_log.json user_registrations.json
+          git add access_log.json user_registrations.json USERS.md
           git diff --staged --quiet || git commit -m "📍 ${{ github.event.action }}: ${{ steps.process.outputs.user_name }} from ${{ steps.process.outputs.domain }}"
           git push
 

@@ -37,6 +37,26 @@
       "type": "standard",
       "active": false,
       "revoked_at": "2026-08-04"
+    },
+    {
+      "key": "LS-D802-C5DC-207D-63D0",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "Rahul Sharma",
+      "issued_at": "2026-08-04",
+      "expires_at": "2026-08-11",
+      "type": "standard",
+      "active": false,
+      "revoked_at": "2026-08-04"
+    },
+    {
+      "key": "LS-E87B-1E14-0E93-966D",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "Priya K",
+      "issued_at": "2026-08-04",
+      "expires_at": "2026-09-18",
+      "type": "standard",
+      "active": false,
+      "revoked_at": "2026-08-04"
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
