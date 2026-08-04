@@ -1,0 +1,124 @@
+name: 🛡️ Access Monitor
+
+on:
+  repository_dispatch:
+    types: [access_ping]
+
+permissions:
+  contents: write
+
+jobs:
+  log-access:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Process Access Ping
+        id: process
+        run: |
+          # Extract payload
+          DOMAIN="${{ github.event.client_payload.domain }}"
+          USER_NAME="${{ github.event.client_payload.user_name }}"
+          TIMESTAMP="${{ github.event.client_payload.timestamp }}"
+          USER_AGENT="${{ github.event.client_payload.user_agent }}"
+          PAGE_URL="${{ github.event.client_payload.page_url }}"
+          
+          echo "📍 Access from: $DOMAIN"
+          echo "👤 User: $USER_NAME"
+          echo "🕐 Time: $TIMESTAMP"
+          
+          # Check if domain is authorized
+          AUTHORIZED=$(cat authorized_domains.json | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          domain = '$DOMAIN'
+          authorized = domain in data['authorized_domains']
+          print('true' if authorized else 'false')
+          ")
+          
+          echo "authorized=$AUTHORIZED" >> $GITHUB_OUTPUT
+          echo "domain=$DOMAIN" >> $GITHUB_OUTPUT
+          echo "user_name=$USER_NAME" >> $GITHUB_OUTPUT
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          
+          # Update access log
+          python3 << 'EOF'
+          import json
+          from datetime import datetime
+          
+          # Read current log
+          with open('access_log.json', 'r') as f:
+              log = json.load(f)
+          
+          # Add new event
+          event = {
+              "domain": "${{ github.event.client_payload.domain }}",
+              "user_name": "${{ github.event.client_payload.user_name }}",
+              "timestamp": "${{ github.event.client_payload.timestamp }}",
+              "user_agent": "${{ github.event.client_payload.user_agent }}",
+              "page_url": "${{ github.event.client_payload.page_url }}",
+              "authorized": $AUTHORIZED == "true",
+              "logged_at": datetime.utcnow().isoformat() + "Z"
+          }
+          
+          log["events"].append(event)
+          log["total_access_count"] = len(log["events"])
+          log["unauthorized_count"] = len([e for e in log["events"] if not e.get("authorized", True)])
+          
+          # Keep last 500 events max
+          if len(log["events"]) > 500:
+              log["events"] = log["events"][-500:]
+          
+          with open('access_log.json', 'w') as f:
+              json.dump(log, f, indent=2)
+          
+          print(f"✅ Logged access #{log['total_access_count']}")
+          EOF
+
+      - name: Commit Access Log
+        run: |
+          git config user.name "Access Monitor Bot"
+          git config user.email "monitor@logsherlock.pro"
+          git add access_log.json
+          git diff --staged --quiet || git commit -m "📍 Access: ${{ steps.process.outputs.user_name }} from ${{ steps.process.outputs.domain }} at ${{ steps.process.outputs.timestamp }}"
+          git push
+
+      - name: 🚨 Send Gmail Alert (Unauthorized)
+        if: steps.process.outputs.authorized == 'false'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: yadakrishna245@gmail.com
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "🚨 UNAUTHORIZED LogSherlock Deployment Detected!"
+          to: yadakrishna245@gmail.com
+          from: LogSherlock Monitor <yadakrishna245@gmail.com>
+          body: |
+            ⚠️ UNAUTHORIZED ACCESS DETECTED
+            ================================
+            
+            Someone is running YOUR LogSherlock Pro code on an unauthorized domain!
+            
+            🌐 Domain: ${{ steps.process.outputs.domain }}
+            👤 User: ${{ steps.process.outputs.user_name }}
+            🕐 Time (IST): ${{ steps.process.outputs.timestamp }}
+            🔗 URL: ${{ github.event.client_payload.page_url }}
+            📱 User Agent: ${{ github.event.client_payload.user_agent }}
+            
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            
+            ACTION REQUIRED:
+            1. Check who deployed your code without permission
+            2. If authorized → add domain to authorized_domains.json
+            3. If unauthorized → take action per LICENSE terms
+            
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            LogSherlock Pro Access Monitor
+            © 2026 Krishna Yada | Senior Tech Lead | Wipro
+
+      - name: ✅ Log Authorized Access (no alert)
+        if: steps.process.outputs.authorized == 'true'
+        run: |
+          echo "✅ Authorized access from ${{ steps.process.outputs.domain }} by ${{ steps.process.outputs.user_name }}"

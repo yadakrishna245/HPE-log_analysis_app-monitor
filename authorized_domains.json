@@ -1,0 +1,10 @@
+{
+  "authorized_domains": [
+    "d3tv1czat55yad.cloudfront.net",
+    "localhost",
+    "127.0.0.1"
+  ],
+  "last_updated": "2026-08-04",
+  "updated_by": "Krishna Yada",
+  "notes": "Add new domains here when you move AWS accounts. Any domain NOT in this list triggers a Gmail alert."
+}
