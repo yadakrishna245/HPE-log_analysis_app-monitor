@@ -3,19 +3,21 @@ name: 🔑 Generate License Key
 on:
   workflow_dispatch:
     inputs:
-      domain:
-        description: 'Domain to license (e.g., abc123.cloudfront.net)'
-        required: true
-      issued_to:
-        description: 'Person/team name'
-        required: true
       days_valid:
-        description: 'License validity in days (default: 365)'
+        description: 'Days valid (default: 7)'
         required: false
-        default: '365'
+        default: '7'
+      issued_to:
+        description: 'Person name (optional)'
+        required: false
+        default: 'User'
+      domain:
+        description: 'Domain (leave default for your CloudFront)'
+        required: false
+        default: 'd3tv1czat55yad.cloudfront.net'
       license_type:
         description: 'License type'
-        required: true
+        required: false
         type: choice
         options:
           - standard
