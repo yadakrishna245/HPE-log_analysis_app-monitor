@@ -57,6 +57,26 @@
       "type": "standard",
       "active": false,
       "revoked_at": "2026-08-04"
+    },
+    {
+      "key": "LS-F736-8569-45A8-2BAB",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "User",
+      "issued_at": "2026-08-04",
+      "expires_at": "2026-08-11",
+      "type": "standard",
+      "active": false,
+      "revoked_at": "2026-08-04"
+    },
+    {
+      "key": "LS-D2F0-35B7-2251-7EA3",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "User",
+      "issued_at": "2026-08-04",
+      "expires_at": "2026-09-18",
+      "type": "standard",
+      "active": false,
+      "revoked_at": "2026-08-04"
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",

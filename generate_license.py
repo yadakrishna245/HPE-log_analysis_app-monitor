@@ -165,9 +165,9 @@ def cli_mode():
     """Command-line argument mode for quick generation."""
     import argparse
     parser = argparse.ArgumentParser(description='LogSherlock Pro License Generator')
+    parser.add_argument('days', nargs='?', type=int, default=7, help='Validity in days (default: 7)')
     parser.add_argument('--domain', '-d', default='d3tv1czat55yad.cloudfront.net', help='Domain (default: your CloudFront)')
-    parser.add_argument('--name', '-n', default='Unknown', help='Person/team name')
-    parser.add_argument('--days', '-D', type=int, default=7, help='Validity in days (default: 7 = free trial)')
+    parser.add_argument('--name', '-n', default='', help='Person/team name (optional)')
     parser.add_argument('--type', '-t', choices=['standard', 'extended', 'master'], default='standard', help='License type')
     parser.add_argument('--list', '-l', action='store_true', help='List all active licenses')
     parser.add_argument('--revoke', '-r', help='Revoke a license key')
@@ -190,7 +190,7 @@ def cli_mode():
     new_license = {
         "key": key,
         "domain": args.domain,
-        "issued_to": args.name,
+        "issued_to": args.name or 'User',
         "issued_at": datetime.now().strftime('%Y-%m-%d'),
         "expires_at": expires,
         "type": args.type,
@@ -200,20 +200,14 @@ def cli_mode():
     data['licenses'].append(new_license)
     save_licenses(data)
     
-    print(f"\n{'='*50}")
-    print(f"  LICENSE GENERATED SUCCESSFULLY!")
-    print(f"{'='*50}")
-    print(f"  Key:       {key}")
-    print(f"  Domain:    {args.domain}")
-    print(f"  Issued to: {args.name}")
-    print(f"  Expires:   {expires} ({args.days} days)")
-    print(f"  Type:      {args.type}")
-    print(f"{'='*50}")
-    print(f"\n  Now run: git add licenses.json && git commit -m \"license: {args.name}\" && git push\n")
+    print(f"\n  KEY: {key}")
+    print(f"  Expires: {expires} ({args.days} days)")
+    print(f"")
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        cli_mode()
-    else:
+    if '--interactive' in sys.argv or '-i' in sys.argv:
+        sys.argv = [a for a in sys.argv if a not in ('--interactive', '-i')]
         interactive_mode()
+    else:
+        cli_mode()
