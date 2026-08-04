@@ -77,6 +77,15 @@
       "type": "standard",
       "active": false,
       "revoked_at": "2026-08-04"
+    },
+    {
+      "key": "LS-32A9-4141-31D7-5FF9",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "User",
+      "issued_at": "2026-08-04",
+      "expires_at": "2026-08-11",
+      "type": "standard",
+      "active": true
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
