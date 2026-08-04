@@ -2,7 +2,7 @@ name: 🛡️ Access Monitor
 
 on:
   repository_dispatch:
-    types: [access_ping]
+    types: [access_ping, user_registered]
 
 permissions:
   contents: write
@@ -14,51 +14,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Process Access Ping
+      - name: Process Ping
         id: process
         run: |
-          # Extract payload
+          EVENT_TYPE="${{ github.event.action }}"
           DOMAIN="${{ github.event.client_payload.domain }}"
           USER_NAME="${{ github.event.client_payload.user_name }}"
           TIMESTAMP="${{ github.event.client_payload.timestamp }}"
           USER_AGENT="${{ github.event.client_payload.user_agent }}"
           PAGE_URL="${{ github.event.client_payload.page_url }}"
+          EMAIL="${{ github.event.client_payload.email }}"
+          MOBILE="${{ github.event.client_payload.mobile }}"
+          LICENSE_KEY="${{ github.event.client_payload.license_key }}"
           
-          echo "📍 Access from: $DOMAIN"
-          echo "👤 User: $USER_NAME"
-          echo "🕐 Time: $TIMESTAMP"
+          echo "📍 Event: $EVENT_TYPE from: $DOMAIN"
+          echo "👤 User: $USER_NAME ($EMAIL)"
           
           # Check if domain is authorized
-          AUTHORIZED=$(cat authorized_domains.json | python3 -c "
-          import json, sys
-          data = json.load(sys.stdin)
+          AUTHORIZED=$(python3 -c "
+          import json
+          with open('authorized_domains.json') as f:
+              data = json.load(f)
           domain = '$DOMAIN'
-          authorized = domain in data['authorized_domains']
-          print('true' if authorized else 'false')
+          print('true' if domain in data['authorized_domains'] else 'false')
           ")
           
           echo "authorized=$AUTHORIZED" >> $GITHUB_OUTPUT
           echo "domain=$DOMAIN" >> $GITHUB_OUTPUT
           echo "user_name=$USER_NAME" >> $GITHUB_OUTPUT
           echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "email=$EMAIL" >> $GITHUB_OUTPUT
+          echo "event_type=$EVENT_TYPE" >> $GITHUB_OUTPUT
           
           # Update access log
           python3 << 'EOF'
           import json
           from datetime import datetime
           
-          # Read current log
           with open('access_log.json', 'r') as f:
               log = json.load(f)
           
-          # Add new event
           event = {
               "domain": "${{ github.event.client_payload.domain }}",
               "user_name": "${{ github.event.client_payload.user_name }}",
+              "email": "${{ github.event.client_payload.email }}",
+              "mobile": "${{ github.event.client_payload.mobile }}",
               "timestamp": "${{ github.event.client_payload.timestamp }}",
               "user_agent": "${{ github.event.client_payload.user_agent }}",
               "page_url": "${{ github.event.client_payload.page_url }}",
-              "authorized": $AUTHORIZED == "true",
+              "license_key": "${{ github.event.client_payload.license_key }}",
+              "event_type": "${{ github.event.action }}",
+              "authorized": "$AUTHORIZED" == "true",
               "logged_at": datetime.utcnow().isoformat() + "Z"
           }
           
@@ -66,22 +72,51 @@ jobs:
           log["total_access_count"] = len(log["events"])
           log["unauthorized_count"] = len([e for e in log["events"] if not e.get("authorized", True)])
           
-          # Keep last 500 events max
-          if len(log["events"]) > 500:
-              log["events"] = log["events"][-500:]
+          if len(log["events"]) > 1000:
+              log["events"] = log["events"][-1000:]
           
           with open('access_log.json', 'w') as f:
               json.dump(log, f, indent=2)
-          
-          print(f"✅ Logged access #{log['total_access_count']}")
           EOF
 
-      - name: Commit Access Log
+          # If user_registered event, also save to user_registrations.json
+          if [ "$EVENT_TYPE" = "user_registered" ]; then
+            python3 << 'EOF2'
+          import json
+          from datetime import datetime
+          
+          with open('user_registrations.json', 'r') as f:
+              reg = json.load(f)
+          
+          # Check if user already registered (by email)
+          email = "${{ github.event.client_payload.email }}"
+          existing = [r for r in reg["registrations"] if r.get("email") == email]
+          
+          if not existing:
+              reg["registrations"].append({
+                  "name": "${{ github.event.client_payload.user_name }}",
+                  "email": email,
+                  "mobile": "${{ github.event.client_payload.mobile }}",
+                  "domain": "${{ github.event.client_payload.domain }}",
+                  "license_key": "${{ github.event.client_payload.license_key }}",
+                  "registered_at": "${{ github.event.client_payload.timestamp }}",
+                  "logged_at": datetime.utcnow().isoformat() + "Z"
+              })
+              reg["total_users"] = len(reg["registrations"])
+          
+          with open('user_registrations.json', 'w') as f:
+              json.dump(reg, f, indent=2)
+          
+          print(f"👤 User registered: {email}")
+          EOF2
+          fi
+
+      - name: Commit Logs
         run: |
           git config user.name "Access Monitor Bot"
           git config user.email "monitor@logsherlock.pro"
-          git add access_log.json
-          git diff --staged --quiet || git commit -m "📍 Access: ${{ steps.process.outputs.user_name }} from ${{ steps.process.outputs.domain }} at ${{ steps.process.outputs.timestamp }}"
+          git add access_log.json user_registrations.json
+          git diff --staged --quiet || git commit -m "📍 ${{ github.event.action }}: ${{ steps.process.outputs.user_name }} from ${{ steps.process.outputs.domain }}"
           git push
 
       - name: 🚨 Send Gmail Alert (Unauthorized)
@@ -92,33 +127,41 @@ jobs:
           server_port: 587
           username: yadakrishna245@gmail.com
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "🚨 UNAUTHORIZED LogSherlock Deployment Detected!"
+          subject: "🚨 UNAUTHORIZED LogSherlock Access from ${{ steps.process.outputs.domain }}"
           to: yadakrishna245@gmail.com
           from: LogSherlock Monitor <yadakrishna245@gmail.com>
           body: |
             ⚠️ UNAUTHORIZED ACCESS DETECTED
-            ================================
-            
-            Someone is running YOUR LogSherlock Pro code on an unauthorized domain!
             
             🌐 Domain: ${{ steps.process.outputs.domain }}
             👤 User: ${{ steps.process.outputs.user_name }}
-            🕐 Time (IST): ${{ steps.process.outputs.timestamp }}
+            📧 Email: ${{ steps.process.outputs.email }}
+            🕐 Time: ${{ steps.process.outputs.timestamp }}
             🔗 URL: ${{ github.event.client_payload.page_url }}
-            📱 User Agent: ${{ github.event.client_payload.user_agent }}
             
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            ACTION: Check who deployed your code without permission.
             
-            ACTION REQUIRED:
-            1. Check who deployed your code without permission
-            2. If authorized → add domain to authorized_domains.json
-            3. If unauthorized → take action per LICENSE terms
-            
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            LogSherlock Pro Access Monitor
-            © 2026 Krishna Yada | Senior Tech Lead | Wipro
+            — LogSherlock Access Monitor
 
-      - name: ✅ Log Authorized Access (no alert)
-        if: steps.process.outputs.authorized == 'true'
-        run: |
-          echo "✅ Authorized access from ${{ steps.process.outputs.domain }} by ${{ steps.process.outputs.user_name }}"
+      - name: 📧 New User Registration Alert
+        if: steps.process.outputs.event_type == 'user_registered'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: yadakrishna245@gmail.com
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "👤 New User Activated: ${{ steps.process.outputs.user_name }}"
+          to: yadakrishna245@gmail.com
+          from: LogSherlock Monitor <yadakrishna245@gmail.com>
+          body: |
+            New user activated LogSherlock Pro!
+            
+            👤 Name: ${{ steps.process.outputs.user_name }}
+            📧 Email: ${{ steps.process.outputs.email }}
+            📱 Mobile: ${{ github.event.client_payload.mobile }}
+            🌐 Domain: ${{ steps.process.outputs.domain }}
+            🔑 License: ${{ github.event.client_payload.license_key }}
+            🕐 Time: ${{ steps.process.outputs.timestamp }}
+            
+            — LogSherlock License System
