@@ -1,0 +1,128 @@
+name: 🔑 Generate License Key
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Domain to license (e.g., abc123.cloudfront.net)'
+        required: true
+      issued_to:
+        description: 'Person/team name'
+        required: true
+      days_valid:
+        description: 'License validity in days (default: 365)'
+        required: false
+        default: '365'
+      license_type:
+        description: 'License type'
+        required: true
+        type: choice
+        options:
+          - standard
+          - extended
+          - master
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate License Key
+        id: gen
+        run: |
+          DOMAIN="${{ github.event.inputs.domain }}"
+          ISSUED_TO="${{ github.event.inputs.issued_to }}"
+          DAYS="${{ github.event.inputs.days_valid }}"
+          TYPE="${{ github.event.inputs.license_type }}"
+          
+          python3 << 'EOF'
+          import json
+          import hashlib
+          import secrets
+          from datetime import datetime, timedelta
+          
+          domain = "${{ github.event.inputs.domain }}"
+          issued_to = "${{ github.event.inputs.issued_to }}"
+          days = int("${{ github.event.inputs.days_valid }}")
+          license_type = "${{ github.event.inputs.license_type }}"
+          
+          # Load existing licenses
+          with open('licenses.json', 'r') as f:
+              data = json.load(f)
+          
+          # Generate unique license key
+          salt = data['secret_salt']
+          raw = f"{domain}:{issued_to}:{salt}:{secrets.token_hex(8)}"
+          hash_val = hashlib.sha256(raw.encode()).hexdigest()[:16].upper()
+          license_key = f"LS-{hash_val[:4]}-{hash_val[4:8]}-{hash_val[8:12]}-{hash_val[12:16]}"
+          
+          # Calculate expiry
+          issued_at = datetime.now().strftime('%Y-%m-%d')
+          expires_at = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
+          
+          # Add to licenses
+          new_license = {
+              "key": license_key,
+              "domain": domain,
+              "issued_to": issued_to,
+              "issued_at": issued_at,
+              "expires_at": expires_at,
+              "type": license_type,
+              "active": True
+          }
+          data['licenses'].append(new_license)
+          data['last_updated'] = issued_at
+          
+          with open('licenses.json', 'w') as f:
+              json.dump(data, f, indent=2)
+          
+          print(f"✅ License generated!")
+          print(f"🔑 Key: {license_key}")
+          print(f"🌐 Domain: {domain}")
+          print(f"👤 Issued to: {issued_to}")
+          print(f"📅 Expires: {expires_at}")
+          print(f"📋 Type: {license_type}")
+          
+          # Write outputs
+          with open('license_output.txt', 'w') as f:
+              f.write(f"KEY={license_key}\n")
+              f.write(f"DOMAIN={domain}\n")
+              f.write(f"ISSUED_TO={issued_to}\n")
+              f.write(f"EXPIRES={expires_at}\n")
+          EOF
+
+      - name: Commit Updated Licenses
+        run: |
+          git config user.name "License Bot"
+          git config user.email "license@logsherlock.pro"
+          git add licenses.json
+          git commit -m "🔑 New license: ${{ github.event.inputs.issued_to }} → ${{ github.event.inputs.domain }}"
+          git push
+
+      - name: 📧 Email License to Krishna
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: yadakrishna245@gmail.com
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "🔑 New LogSherlock License Generated"
+          to: yadakrishna245@gmail.com
+          from: LogSherlock License <yadakrishna245@gmail.com>
+          body: |
+            New license key generated:
+            
+            🔑 Check licenses.json for the new key
+            🌐 Domain: ${{ github.event.inputs.domain }}
+            👤 Issued to: ${{ github.event.inputs.issued_to }}
+            📅 Valid for: ${{ github.event.inputs.days_valid }} days
+            📋 Type: ${{ github.event.inputs.license_type }}
+            
+            Share this key with the user. They enter it in LogSherlock Settings.
+            
+            — LogSherlock License System

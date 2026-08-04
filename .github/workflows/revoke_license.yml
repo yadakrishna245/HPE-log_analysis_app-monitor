@@ -1,0 +1,55 @@
+name: 🚫 Revoke License
+
+on:
+  workflow_dispatch:
+    inputs:
+      license_key:
+        description: 'License key to revoke (e.g., LS-XXXX-XXXX-XXXX-XXXX)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  revoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Revoke License
+        run: |
+          python3 << 'EOF'
+          import json
+          
+          key_to_revoke = "${{ github.event.inputs.license_key }}"
+          
+          with open('licenses.json', 'r') as f:
+              data = json.load(f)
+          
+          found = False
+          for lic in data['licenses']:
+              if lic['key'] == key_to_revoke:
+                  lic['active'] = False
+                  lic['revoked_at'] = __import__('datetime').datetime.now().strftime('%Y-%m-%d')
+                  found = True
+                  print(f"🚫 Revoked license: {key_to_revoke}")
+                  print(f"   Domain: {lic['domain']}")
+                  print(f"   Issued to: {lic['issued_to']}")
+                  break
+          
+          if not found:
+              print(f"❌ License not found: {key_to_revoke}")
+              exit(1)
+          
+          with open('licenses.json', 'w') as f:
+              json.dump(data, f, indent=2)
+          EOF
+
+      - name: Commit
+        run: |
+          git config user.name "License Bot"
+          git config user.email "license@logsherlock.pro"
+          git add licenses.json
+          git commit -m "🚫 Revoked license: ${{ github.event.inputs.license_key }}"
+          git push

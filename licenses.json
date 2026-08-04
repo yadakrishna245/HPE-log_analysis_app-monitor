@@ -1,0 +1,25 @@
+{
+  "licenses": [
+    {
+      "key": "LS-MASTER-2026-KRISHNA-YADA",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "Krishna Yada",
+      "issued_at": "2026-08-04",
+      "expires_at": "2099-12-31",
+      "type": "master",
+      "active": true
+    },
+    {
+      "key": "LS-MASTER-LOCALHOST-DEV",
+      "domain": "localhost",
+      "issued_to": "Krishna Yada (Dev)",
+      "issued_at": "2026-08-04",
+      "expires_at": "2099-12-31",
+      "type": "master",
+      "active": true
+    }
+  ],
+  "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
+  "trial_days": 7,
+  "last_updated": "2026-08-04"
+}
