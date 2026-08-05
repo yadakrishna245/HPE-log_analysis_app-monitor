@@ -1,6 +1,6 @@
 {
-  "total_access_count": 36,
-  "unauthorized_count": 36,
+  "total_access_count": 37,
+  "unauthorized_count": 37,
   "events": [
     {
       "domain": "d3tv1czat55yad.cloudfront.net",
@@ -469,6 +469,19 @@
       "event_type": "user_registered",
       "authorized": false,
       "logged_at": "2026-08-05T10:02:00.212741Z"
+    },
+    {
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "user_name": "Harishankar S",
+      "email": "s3@gmail.com",
+      "mobile": "1234567890",
+      "timestamp": "5/8/2026, 4:22:42 pm IST",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "page_url": "https://d3tv1czat55yad.cloudfront.net/",
+      "license_key": "LS-FDF8-E877-BA0F-483C",
+      "event_type": "user_registered",
+      "authorized": false,
+      "logged_at": "2026-08-05T10:53:00.891298Z"
     }
   ]
 }

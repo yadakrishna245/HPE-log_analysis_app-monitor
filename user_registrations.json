@@ -1,5 +1,5 @@
 {
-  "total_users": 3,
+  "total_users": 4,
   "registrations": [
     {
       "name": "Krishna Yada",
@@ -27,6 +27,15 @@
       "license_key": "LS-F357-9E53-13D2-6404",
       "registered_at": "5/8/2026, 9:58:45 am IST",
       "logged_at": "2026-08-05T04:29:01.121227Z"
+    },
+    {
+      "name": "Harishankar S",
+      "email": "s3@gmail.com",
+      "mobile": "1234567890",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "license_key": "LS-FDF8-E877-BA0F-483C",
+      "registered_at": "5/8/2026, 4:22:42 pm IST",
+      "logged_at": "2026-08-05T10:53:00.915767Z"
     }
   ]
 }
