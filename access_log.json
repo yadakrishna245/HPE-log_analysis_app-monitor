@@ -1,6 +1,6 @@
 {
-  "total_access_count": 13,
-  "unauthorized_count": 13,
+  "total_access_count": 14,
+  "unauthorized_count": 14,
   "events": [
     {
       "domain": "d3tv1czat55yad.cloudfront.net",
@@ -170,6 +170,19 @@
       "event_type": "user_registered",
       "authorized": false,
       "logged_at": "2026-08-05T04:52:37.299889Z"
+    },
+    {
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "user_name": "krishna yada",
+      "email": "yadakrishna245@gmail.com",
+      "mobile": "8431825539",
+      "timestamp": "5/8/2026, 10:34:52 am IST",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+      "page_url": "https://d3tv1czat55yad.cloudfront.net/",
+      "license_key": "LS-F357-9E53-13D2-6404",
+      "event_type": "user_registered",
+      "authorized": false,
+      "logged_at": "2026-08-05T05:05:02.108498Z"
     }
   ]
 }
