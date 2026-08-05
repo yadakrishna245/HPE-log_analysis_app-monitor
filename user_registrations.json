@@ -1,5 +1,5 @@
 {
-  "total_users": 1,
+  "total_users": 2,
   "registrations": [
     {
       "name": "Krishna Yada",
@@ -9,6 +9,15 @@
       "license_key": "LS-MASTER-2026-KRISHNA-YADA",
       "registered_at": "4/8/2026, 8:58:14 pm IST",
       "logged_at": "2026-08-04T15:30:52.739218Z"
+    },
+    {
+      "name": "DNR",
+      "email": "nageswara-rao.dasari-ext@hpe.com",
+      "mobile": "8718082848",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "license_key": "LS-2FC8-C538-DECF-3D31",
+      "registered_at": "5/8/2026, 7:04:32 am IST",
+      "logged_at": "2026-08-05T01:34:42.047024Z"
     }
   ]
 }
