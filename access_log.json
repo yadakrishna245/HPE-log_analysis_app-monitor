@@ -1,6 +1,6 @@
 {
-  "total_access_count": 33,
-  "unauthorized_count": 33,
+  "total_access_count": 34,
+  "unauthorized_count": 34,
   "events": [
     {
       "domain": "d3tv1czat55yad.cloudfront.net",
@@ -430,6 +430,19 @@
       "event_type": "user_registered",
       "authorized": false,
       "logged_at": "2026-08-05T08:17:37.270401Z"
+    },
+    {
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "user_name": "Krishna Yada",
+      "email": "krishna.yada@wipro.com",
+      "mobile": "9701908688",
+      "timestamp": "5/8/2026, 1:57:49 pm IST",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.",
+      "page_url": "https://d3tv1czat55yad.cloudfront.net/",
+      "license_key": "LS-MASTER-2026-KRISHNA-YADA",
+      "event_type": "user_registered",
+      "authorized": false,
+      "logged_at": "2026-08-05T08:30:30.483911Z"
     }
   ]
 }
