@@ -122,9 +122,18 @@
       "expires_at": "2026-08-12",
       "type": "standard",
       "active": true
+    },
+    {
+      "key": "LS-3DF0-1268-E866-9F94",
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "issued_to": "User",
+      "issued_at": "2026-08-06",
+      "expires_at": "2026-08-13",
+      "type": "standard",
+      "active": true
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
   "trial_days": 7,
-  "last_updated": "2026-08-05"
+  "last_updated": "2026-08-06"
 }
