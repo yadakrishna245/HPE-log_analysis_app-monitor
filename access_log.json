@@ -1,6 +1,6 @@
 {
-  "total_access_count": 48,
-  "unauthorized_count": 48,
+  "total_access_count": 49,
+  "unauthorized_count": 49,
   "events": [
     {
       "domain": "d3tv1czat55yad.cloudfront.net",
@@ -625,6 +625,19 @@
       "event_type": "user_registered",
       "authorized": false,
       "logged_at": "2026-08-07T02:23:07.082684Z"
+    },
+    {
+      "domain": "d3tv1czat55yad.cloudfront.net",
+      "user_name": "DNR",
+      "email": "nageswara-rao.dasari-ext@hpe.com",
+      "mobile": "8718082848",
+      "timestamp": "7/8/2026, 11:42:04 am IST",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.",
+      "page_url": "https://d3tv1czat55yad.cloudfront.net/",
+      "license_key": "LS-2FC8-C538-DECF-3D31",
+      "event_type": "user_registered",
+      "authorized": false,
+      "logged_at": "2026-08-07T06:12:16.453941Z"
     }
   ]
 }
