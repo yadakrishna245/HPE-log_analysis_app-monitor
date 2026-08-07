@@ -85,7 +85,6 @@ tr:hover td{background:rgba(1,169,130,0.05)}
 .gen-form select:focus,.gen-form input:focus{outline:none;border-color:var(--green)}
 .gen-results{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
 .gen-results h3{margin-bottom:16px}
-.key-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0f0f23;border-radius:8px;margin-bottom:8px;font-family:monospace;font-size:0.85rem}
 /* System Info */
 .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
 .info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
@@ -111,6 +110,55 @@ tr:hover td{background:rgba(1,169,130,0.05)}
 .spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-overlay{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:var(--text-dim)}
+/* Checkbox */
+.license-checkbox{width:18px;height:18px;accent-color:var(--green);cursor:pointer}
+/* Bulk Actions Bar */
+.bulk-actions{display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;flex-wrap:wrap}
+.bulk-actions .selected-count{font-size:0.85rem;color:var(--text-dim)}
+/* Analytics */
+.analytics-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.analytics-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.analytics-stat .stat-num{font-size:2.2rem;font-weight:700;color:var(--green)}
+.analytics-stat .stat-label{font-size:0.85rem;color:var(--text-dim);margin-top:4px}
+.analytics-chart{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:28px}
+.analytics-chart h3{margin-bottom:16px;font-size:1rem}
+.analytics-bar-chart{display:flex;align-items:flex-end;gap:16px;height:180px;padding:20px 0}
+.analytics-bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:8px}
+.analytics-bar{width:100%;background:linear-gradient(to top,var(--green),var(--green-dim));border-radius:6px 6px 0 0;transition:height 0.6s ease;min-height:4px;position:relative}
+.analytics-bar:hover{opacity:0.8}
+.analytics-bar-val{font-size:0.75rem;color:var(--green);font-weight:600}
+.analytics-bar-label{font-size:0.72rem;color:var(--text-dim);text-align:center}
+.breakdown-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.breakdown-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.breakdown-card h3{margin-bottom:16px;font-size:1rem;color:var(--green)}
+.breakdown-table{width:100%;font-size:0.85rem}
+.breakdown-table th,.breakdown-table td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.breakdown-table th{color:var(--text-dim);font-weight:600}
+/* Toggle Switch */
+.toggle-wrap{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.toggle-switch{position:relative;width:48px;height:26px;cursor:pointer}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:26px;transition:0.3s}
+.toggle-slider:before{content:'';position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:0.3s}
+.toggle-switch input:checked+.toggle-slider{background:var(--green)}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(22px)}
+.toggle-label{font-size:0.9rem;color:var(--text)}
+/* Confirm Modal */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;max-width:480px;width:90%;box-shadow:var(--shadow)}
+.modal-box h3{margin-bottom:12px;color:var(--red)}
+.modal-box p{color:var(--text-dim);font-size:0.9rem;margin-bottom:24px}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end}
+/* Admin List */
+.admin-list{margin-bottom:20px}
+.admin-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0f0f23;border-radius:8px;margin-bottom:8px;font-size:0.85rem}
+.admin-item .admin-info{display:flex;flex-direction:column;gap:2px}
+.admin-item .admin-name{font-weight:600;color:var(--text)}
+.admin-item .admin-email{color:var(--text-dim);font-size:0.8rem}
+.admin-item .admin-role{color:var(--purple);font-size:0.75rem}
+/* Invoice button */
+.key-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0f0f23;border-radius:8px;margin-bottom:8px;font-family:monospace;font-size:0.85rem;gap:8px;flex-wrap:wrap}
+.key-item .key-actions{display:flex;gap:6px}
 /* Responsive */
 @media(max-width:768px){
 .header{flex-direction:column;gap:12px;align-items:flex-start}
@@ -170,9 +218,11 @@ tr:hover td{background:rgba(1,169,130,0.05)}
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('overview')">&#x1F4CA; Overview</button>
     <button class="tab-btn" onclick="switchTab('licenses')">&#x1F511; Licenses</button>
+    <button class="tab-btn" onclick="switchTab('analytics')">&#x1F4C8; Analytics</button>
     <button class="tab-btn" onclick="switchTab('generate')">&#x2699;&#xFE0F; Generate Keys</button>
     <button class="tab-btn" onclick="switchTab('system')">&#x1F4BB; System Info</button>
     <button class="tab-btn" onclick="switchTab('settings')">&#x2699;&#xFE0F; Settings</button>
+    <button class="tab-btn" onclick="switchTab('notifications')">&#x1F514; Notifications</button>
   </div>
 
   <!-- Tab 1: Overview -->
@@ -197,6 +247,12 @@ tr:hover td{background:rgba(1,169,130,0.05)}
 
   <!-- Tab 2: Licenses -->
   <div class="tab-content" id="tab-licenses">
+    <div class="bulk-actions">
+      <button class="btn btn-danger btn-sm" onclick="bulkRevokeLicenses()">&#x1F6AB; Bulk Revoke</button>
+      <button class="btn btn-outline btn-sm" onclick="selectAllExpired()">&#x26A0;&#xFE0F; Select All Expired</button>
+      <button class="btn btn-outline btn-sm" onclick="clearSelection()">Clear Selection</button>
+      <span class="selected-count" id="selectedCount">0 selected</span>
+    </div>
     <div class="table-wrap">
       <div class="table-header">
         <h3>&#x1F511; License Management</h3>
@@ -208,7 +264,25 @@ tr:hover td{background:rgba(1,169,130,0.05)}
     </div>
   </div>
 
-  <!-- Tab 3: Generate Keys -->
+  <!-- Tab 3: Analytics -->
+  <div class="tab-content" id="tab-analytics">
+    <h3 style="margin-bottom:20px">&#x1F4C8; License Analytics</h3>
+    <div class="analytics-stats" id="analyticsStats">
+      <div class="analytics-stat"><div class="stat-num" id="anaTotal">--</div><div class="stat-label">Total Activations</div></div>
+      <div class="analytics-stat"><div class="stat-num" id="anaToday" style="color:var(--purple)">--</div><div class="stat-label">Today</div></div>
+      <div class="analytics-stat"><div class="stat-num" id="anaWeek" style="color:var(--orange)">--</div><div class="stat-label">This Week</div></div>
+      <div class="analytics-stat"><div class="stat-num" id="anaMonth">--</div><div class="stat-label">This Month</div></div>
+    </div>
+    <div class="analytics-chart">
+      <h3>Activations - Last 7 Days</h3>
+      <div class="analytics-bar-chart" id="analyticsBarChart">
+        <div class="loading-overlay"><div class="spinner"></div><span>Loading analytics...</span></div>
+      </div>
+    </div>
+    <div class="breakdown-grid" id="analyticsBreakdown"></div>
+  </div>
+
+  <!-- Tab 4: Generate Keys -->
   <div class="tab-content" id="tab-generate">
     <div class="gen-form">
       <h3>&#x1F511; Generate License Keys</h3>
@@ -235,7 +309,7 @@ tr:hover td{background:rgba(1,169,130,0.05)}
     </div>
   </div>
 
-  <!-- Tab 4: System Info -->
+  <!-- Tab 5: System Info -->
   <div class="tab-content" id="tab-system">
     <div class="info-grid">
       <div class="info-card">
@@ -295,6 +369,36 @@ tr:hover td{background:rgba(1,169,130,0.05)}
     <div class="settings-section">
       <h3>&#x1F4E5; Export Data</h3>
       <button class="btn btn-purple" onclick="exportCSV()">&#x1F4C4; Export License Data as CSV</button>
+    </div>
+    <div class="settings-section" style="max-width:700px">
+      <h3>&#x1F465; Multi-Admin Management</h3>
+      <div class="admin-list" id="adminList">
+        <div class="loading-overlay"><div class="spinner"></div><span>Loading admins...</span></div>
+      </div>
+      <h4 style="font-size:0.9rem;color:var(--text-dim);margin-bottom:12px">Add New Admin</h4>
+      <input type="text" id="newAdminUser" placeholder="Username">
+      <input type="text" id="newAdminEmail" placeholder="Email">
+      <button class="btn btn-primary" onclick="addAdmin()" style="width:auto">Add Admin</button>
+    </div>
+  </div>
+
+  <!-- Tab: Notifications -->
+  <div class="tab-content" id="tab-notifications">
+    <div class="settings-section" style="max-width:700px">
+      <h3>&#x1F514; Webhook Configuration</h3>
+      <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:4px">Webhook URL (Slack/Discord)</label>
+      <input type="text" id="webhookUrl" placeholder="https://hooks.slack.com/services/...">
+      <div class="toggle-wrap">
+        <label class="toggle-switch">
+          <input type="checkbox" id="emailNotifyToggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Email Notifications</span>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <button class="btn btn-primary" onclick="saveWebhookConfig()" style="width:auto">Save Configuration</button>
+        <button class="btn btn-outline" onclick="testWebhook()">&#x1F4E8; Test Webhook</button>
+      </div>
     </div>
   </div>
 </div>
@@ -428,10 +532,13 @@ function switchTab(name) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  const tabs = ['overview','licenses','generate','system','settings'];
+  const tabs = ['overview','licenses','analytics','generate','system','settings','notifications'];
   const idx = tabs.indexOf(name);
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
   if (name === 'licenses') loadLicenses();
+  if (name === 'analytics') loadAnalytics();
+  if (name === 'notifications') loadWebhookConfig();
+  if (name === 'settings') loadAdminUsers();
 }
 
 // Overview
@@ -496,7 +603,7 @@ function renderLicenseTable() {
     container.innerHTML = '<div class="loading-overlay">No licenses found</div>';
     return;
   }
-  let html = '<table><thead><tr><th>#</th><th>User Name</th><th>License Key</th><th>Activated</th><th>Last Seen</th><th>Expiry</th><th>Days Left</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  let html = '<table><thead><tr><th><input type="checkbox" class="license-checkbox" onchange="toggleSelectAll(this)"></th><th>#</th><th>User Name</th><th>License Key</th><th>Activated</th><th>Last Seen</th><th>Expiry</th><th>Days Left</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
   licenseData.forEach((l, i) => {
     const name = l.user_name || l.name || l.customer || 'N/A';
     const key = l.license_key || l.key || 'N/A';
@@ -514,10 +621,12 @@ function renderLicenseTable() {
     } else {
       status = 'Expired'; badge = 'badge-expired';
     }
-    html += '<tr><td>'+(i+1)+'</td><td>'+name+'</td><td style="font-family:monospace;font-size:0.8rem">'+key+'</td><td>'+activated+'</td><td>'+lastSeen+'</td><td>'+expiry+'</td><td>'+daysLeft+'</td><td><span class="badge '+badge+'">'+status+'</span></td><td><button class="btn btn-sm btn-outline" onclick="resetKey(\''+key+'\')">Reset</button> <button class="btn btn-sm btn-outline" onclick="copyText(\''+key+'\')">Copy</button></td></tr>';
+    const isExpired = (status === 'Expired');
+    html += '<tr data-key="'+key+'" data-status="'+status+'"><td><input type="checkbox" class="license-checkbox license-cb" data-key="'+key+'" data-expired="'+isExpired+'" onchange="updateSelectedCount()"></td><td>'+(i+1)+'</td><td>'+name+'</td><td style="font-family:monospace;font-size:0.8rem">'+key+'</td><td>'+activated+'</td><td>'+lastSeen+'</td><td>'+expiry+'</td><td>'+daysLeft+'</td><td><span class="badge '+badge+'">'+status+'</span></td><td><button class="btn btn-sm btn-outline" onclick="resetKey(\''+key+'\')">Reset</button> <button class="btn btn-sm btn-outline" onclick="copyText(\''+key+'\')">Copy</button></td></tr>';
   });
   html += '</tbody></table>';
   container.innerHTML = html;
+  updateSelectedCount();
 }
 
 function resetKey(key) {
@@ -569,7 +678,7 @@ function generateKeys() {
   const list = document.getElementById('keysList');
   list.innerHTML = '';
   generatedKeys.forEach(k => {
-    list.innerHTML += '<div class="key-item"><span>'+k+'</span><button class="btn btn-sm btn-outline" onclick="copyText(\''+k+'\')">Copy</button></div>';
+    list.innerHTML += '<div class="key-item"><span>'+k+'</span><span class="key-actions"><button class="btn btn-sm btn-outline" onclick="copyText(\''+k+'\')">Copy</button><button class="btn btn-sm btn-purple" onclick="printInvoice(\''+k+'\')">&#x1F5A8;&#xFE0F; Invoice</button></span></div>';
   });
   showToast(count + ' key(s) generated!' + (customer ? ' For: ' + customer : ''), 'success');
 }
@@ -625,6 +734,300 @@ function exportCSV() {
   a.download = 'logsherlock_licenses_' + new Date().toISOString().split('T')[0] + '.csv';
   a.click();
   showToast('CSV exported!', 'success');
+}
+
+// === BULK REVOKE FUNCTIONS ===
+function updateSelectedCount() {
+  const checked = document.querySelectorAll('.license-cb:checked');
+  document.getElementById('selectedCount').textContent = checked.length + ' selected';
+}
+
+function toggleSelectAll(masterCb) {
+  document.querySelectorAll('.license-cb').forEach(cb => { cb.checked = masterCb.checked; });
+  updateSelectedCount();
+}
+
+function selectAllExpired() {
+  document.querySelectorAll('.license-cb').forEach(cb => { cb.checked = false; });
+  document.querySelectorAll('.license-cb[data-expired="true"]').forEach(cb => { cb.checked = true; });
+  updateSelectedCount();
+  showToast('Selected all expired licenses', 'info');
+}
+
+function clearSelection() {
+  document.querySelectorAll('.license-cb').forEach(cb => { cb.checked = false; });
+  const masterCb = document.querySelector('.license-checkbox:not(.license-cb)');
+  if (masterCb) masterCb.checked = false;
+  updateSelectedCount();
+}
+
+function bulkRevokeLicenses() {
+  const checked = document.querySelectorAll('.license-cb:checked');
+  if (!checked.length) { showToast('No licenses selected', 'error'); return; }
+  const keys = Array.from(checked).map(cb => cb.dataset.key);
+  showConfirmModal(
+    'Bulk Revoke ' + keys.length + ' License(s)',
+    'Are you sure you want to revoke ' + keys.length + ' license key(s)? This action cannot be undone.',
+    async () => {
+      try {
+        const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/bulk-revoke', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({admin_secret: ADMIN_SECRET, license_keys: keys})
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Successfully revoked ' + keys.length + ' license(s)', 'success');
+          loadLicenses();
+        } else {
+          showToast('Revoke failed: ' + (data.message || 'Unknown error'), 'error');
+        }
+      } catch(e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+  );
+}
+
+function showConfirmModal(title, message, onConfirm) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = '<div class="modal-box"><h3>' + title + '</h3><p>' + message + '</p><div class="modal-actions"><button class="btn btn-outline" id="modalCancel">Cancel</button><button class="btn btn-danger" id="modalConfirm">Confirm Revoke</button></div></div>';
+  document.body.appendChild(overlay);
+  overlay.querySelector('#modalCancel').onclick = () => overlay.remove();
+  overlay.querySelector('#modalConfirm').onclick = () => { overlay.remove(); onConfirm(); };
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+}
+
+// === ANALYTICS FUNCTIONS ===
+async function loadAnalytics() {
+  const chartEl = document.getElementById('analyticsBarChart');
+  chartEl.innerHTML = '<div class="loading-overlay"><div class="spinner"></div><span>Loading analytics...</span></div>';
+  try {
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/analytics', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET})
+    });
+    const data = await res.json();
+    document.getElementById('anaTotal').textContent = data.total_activations || 0;
+    document.getElementById('anaToday').textContent = data.today || 0;
+    document.getElementById('anaWeek').textContent = data.this_week || 0;
+    document.getElementById('anaMonth').textContent = data.this_month || 0;
+
+    // Render bar chart for last_7_days
+    const days = data.last_7_days || [];
+    if (days.length) {
+      const maxVal = Math.max(...days.map(d => d.count), 1);
+      let chartHtml = '';
+      days.forEach(d => {
+        const pct = (d.count / maxVal) * 100;
+        const dateLabel = d.date ? d.date.substring(5) : '?';
+        chartHtml += '<div class="analytics-bar-col"><div class="analytics-bar-val">' + d.count + '</div><div class="analytics-bar" style="height:' + Math.max(pct, 5) + '%"></div><span class="analytics-bar-label">' + dateLabel + '</span></div>';
+      });
+      chartEl.innerHTML = chartHtml;
+    } else {
+      chartEl.innerHTML = '<div class="loading-overlay" style="color:var(--text-dim)">No activity data available</div>';
+    }
+
+    // Render breakdown tables
+    renderAnalyticsBreakdown(data);
+  } catch(e) {
+    chartEl.innerHTML = '<div class="loading-overlay" style="color:var(--red)">&#x26A0;&#xFE0F; Failed to load analytics: ' + e.message + '</div>';
+    showToast('Analytics error: ' + e.message, 'error');
+  }
+}
+
+function renderAnalyticsBreakdown(data) {
+  const container = document.getElementById('analyticsBreakdown');
+  let html = '';
+  // Weekly breakdown
+  html += '<div class="breakdown-card"><h3>Weekly Summary</h3><table class="breakdown-table"><thead><tr><th>Period</th><th>Activations</th></tr></thead><tbody>';
+  html += '<tr><td>This Week</td><td>' + (data.this_week || 0) + '</td></tr>';
+  html += '<tr><td>Today</td><td>' + (data.today || 0) + '</td></tr>';
+  const avg7 = data.last_7_days ? Math.round(data.last_7_days.reduce((s,d)=>s+d.count,0)/7) : 0;
+  html += '<tr><td>Daily Average (7d)</td><td>' + avg7 + '</td></tr>';
+  html += '</tbody></table></div>';
+  // Monthly breakdown
+  html += '<div class="breakdown-card"><h3>Monthly Summary</h3><table class="breakdown-table"><thead><tr><th>Period</th><th>Activations</th></tr></thead><tbody>';
+  html += '<tr><td>This Month</td><td>' + (data.this_month || 0) + '</td></tr>';
+  html += '<tr><td>Total All-Time</td><td>' + (data.total_activations || 0) + '</td></tr>';
+  const monthlyAvg = data.total_activations && data.this_month ? Math.round(data.total_activations / Math.max(1, Math.ceil((Date.now() - new Date('2026-01-01').getTime()) / (30*86400000)))) : 0;
+  html += '<tr><td>Monthly Average</td><td>' + monthlyAvg + '</td></tr>';
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+// === PRINT INVOICE FUNCTION ===
+function printInvoice(key) {
+  const duration = document.getElementById('genDuration').value;
+  const durationText = duration === '99999' ? 'Lifetime' : duration + ' days';
+  const customer = document.getElementById('genCustomer').value.trim() || 'N/A';
+  const today = new Date().toLocaleDateString('en-IN', {year:'numeric',month:'long',day:'numeric'});
+
+  const invoiceHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>LogSherlock Pro - License Invoice</title><style>'
+    + 'body{font-family:system-ui,-apple-system,sans-serif;padding:40px;max-width:700px;margin:0 auto;color:#1a1a2e}'
+    + '.header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #01a982;padding-bottom:20px;margin-bottom:30px}'
+    + '.header h1{color:#01a982;font-size:1.5rem;margin:0}'
+    + '.header .hpe{background:#01a982;color:#fff;padding:6px 14px;border-radius:6px;font-weight:bold;font-size:0.9rem}'
+    + '.invoice-body{margin-bottom:40px}'
+    + '.license-key{font-family:monospace;font-size:1.6rem;font-weight:bold;background:#f0fdf4;border:2px solid #01a982;padding:16px 24px;border-radius:8px;text-align:center;margin:24px 0;letter-spacing:1px}'
+    + '.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e5e7eb;font-size:0.95rem}'
+    + '.detail-row .label{color:#64748b;font-weight:500}'
+    + '.detail-row .value{font-weight:600}'
+    + '.terms{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-top:30px;font-size:0.85rem;color:#64748b}'
+    + '.terms h4{color:#1a1a2e;margin-bottom:8px}'
+    + '.footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #e5e7eb;font-size:0.8rem;color:#94a3b8}'
+    + '@media print{body{padding:20px}}'
+    + '</style></head><body>'
+    + '<div class="header"><h1>LogSherlock Pro</h1><span class="hpe">HPE</span></div>'
+    + '<div class="invoice-body">'
+    + '<h2 style="margin-bottom:20px;font-size:1.2rem">License Invoice</h2>'
+    + '<div class="license-key">' + key + '</div>'
+    + '<div class="detail-row"><span class="label">Customer</span><span class="value">' + customer + '</span></div>'
+    + '<div class="detail-row"><span class="label">Duration</span><span class="value">' + durationText + '</span></div>'
+    + '<div class="detail-row"><span class="label">Issue Date</span><span class="value">' + today + '</span></div>'
+    + '<div class="detail-row"><span class="label">Product</span><span class="value">LogSherlock Pro - HPE Log Analysis</span></div>'
+    + '<div class="terms"><h4>Terms &amp; Conditions</h4><p>One device only. Contact admin for transfer.</p></div>'
+    + '</div>'
+    + '<div class="footer">&copy; 2026 Krishna Yada. All Rights Reserved.</div>'
+    + '<script>window.onload=function(){window.print()}<\/script>'
+    + '</body></html>';
+
+  const w = window.open('', '_blank');
+  w.document.write(invoiceHTML);
+  w.document.close();
+}
+
+// === NOTIFICATIONS / WEBHOOK FUNCTIONS ===
+async function loadWebhookConfig() {
+  try {
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/webhook-config', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET, action: 'get'})
+    });
+    const data = await res.json();
+    if (data.webhook_url) document.getElementById('webhookUrl').value = data.webhook_url;
+    document.getElementById('emailNotifyToggle').checked = !!data.email_notify;
+  } catch(e) {
+    // Silently fail on load - config may not exist yet
+  }
+}
+
+async function saveWebhookConfig() {
+  const webhook_url = document.getElementById('webhookUrl').value.trim();
+  const email_notify = document.getElementById('emailNotifyToggle').checked;
+  try {
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/webhook-config', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET, action: 'set', webhook_url, email_notify})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Webhook configuration saved!', 'success');
+    } else {
+      showToast('Failed to save: ' + (data.message || 'Unknown error'), 'error');
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+async function testWebhook() {
+  const webhook_url = document.getElementById('webhookUrl').value.trim();
+  if (!webhook_url) { showToast('Please enter a webhook URL first', 'error'); return; }
+  try {
+    showToast('Sending test message...', 'info');
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/webhook-config', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET, action: 'test', webhook_url})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Test message sent successfully!', 'success');
+    } else {
+      showToast('Test failed: ' + (data.message || 'Unknown error'), 'error');
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+// === MULTI-ADMIN FUNCTIONS ===
+async function loadAdminUsers() {
+  const container = document.getElementById('adminList');
+  try {
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/admin-users', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET, action: 'list'})
+    });
+    const data = await res.json();
+    const admins = data.admins || data || [];
+    if (!admins.length) {
+      container.innerHTML = '<div style="padding:12px;color:var(--text-dim);font-size:0.85rem">No admin users configured</div>';
+      return;
+    }
+    let html = '';
+    admins.forEach(a => {
+      const isSuperAdmin = a.role === 'super_admin' || a.username === 'krishna';
+      html += '<div class="admin-item"><div class="admin-info"><span class="admin-name">' + (a.username || 'Unknown') + '</span><span class="admin-email">' + (a.email || '') + '</span>' + (isSuperAdmin ? '<span class="admin-role">Super Admin</span>' : '') + '</div>';
+      if (!isSuperAdmin) {
+        html += '<button class="btn btn-sm btn-danger" onclick="removeAdmin(\'' + a.username + '\')">Remove</button>';
+      }
+      html += '</div>';
+    });
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<div style="padding:12px;color:var(--red);font-size:0.85rem">Failed to load admins: ' + e.message + '</div>';
+  }
+}
+
+async function addAdmin() {
+  const username = document.getElementById('newAdminUser').value.trim();
+  const email = document.getElementById('newAdminEmail').value.trim();
+  if (!username || !email) { showToast('Username and email are required', 'error'); return; }
+  try {
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/admin-users', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET, action: 'add', new_admin: {username, email}})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Admin "' + username + '" added!', 'success');
+      document.getElementById('newAdminUser').value = '';
+      document.getElementById('newAdminEmail').value = '';
+      loadAdminUsers();
+    } else {
+      showToast('Failed: ' + (data.message || 'Unknown error'), 'error');
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+async function removeAdmin(username) {
+  if (!confirm('Remove admin "' + username + '"? This cannot be undone.')) return;
+  try {
+    const res = await fetch('https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/admin-users', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({admin_secret: ADMIN_SECRET, action: 'remove', username})
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Admin "' + username + '" removed', 'success');
+      loadAdminUsers();
+    } else {
+      showToast('Failed: ' + (data.message || 'Unknown error'), 'error');
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
 }
 
 // Init
