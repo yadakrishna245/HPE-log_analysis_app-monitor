@@ -316,11 +316,11 @@ tr:hover td{background:rgba(1,169,130,0.05)}
         <h3>&#x1F4E6; Application</h3>
         <div class="info-row"><span class="lbl">Version</span><span class="val">v4.0 (Enterprise)</span></div>
         <div class="info-row"><span class="lbl">Build Date</span><span class="val">Aug 7, 2026</span></div>
-        <div class="info-row"><span class="lbl">Total Features</span><span class="val">144</span></div>
+        <div class="info-row"><span class="lbl">Total Features</span><span class="val">158</span></div>
         <div class="info-row"><span class="lbl">Detection Patterns</span><span class="val">455</span></div>
         <div class="info-row"><span class="lbl">Known Issues KB</span><span class="val">120 entries</span></div>
         <div class="info-row"><span class="lbl">VME Guide KB</span><span class="val">48 entries</span></div>
-        <div class="info-row"><span class="lbl">JS Modules</span><span class="val">52 files</span></div>
+        <div class="info-row"><span class="lbl">JS Modules</span><span class="val">66 files</span></div>
       </div>
       <div class="info-card">
         <h3>&#x2601;&#xFE0F; AWS Infrastructure</h3>
@@ -448,12 +448,12 @@ function md5(string) {
     var a = x[0], b = x[1], c = x[2], d = x[3];
     a = ff(a,b,c,d,k[0],7,-680876936);d = ff(d,a,b,c,k[1],12,-389564586);c = ff(c,d,a,b,k[2],17,606105819);b = ff(b,c,d,a,k[3],22,-1044525330);
     a = ff(a,b,c,d,k[4],7,-176418897);d = ff(d,a,b,c,k[5],12,1200080426);c = ff(c,d,a,b,k[6],17,-1473231341);b = ff(b,c,d,a,k[7],22,-45705983);
-    a = ff(a,b,c,d,k[8],7,1770035416);d = ff(d,a,b,c,k[9],12,-1958414417);c = ff(c,d,a,b,k[10],17,-42063);b = ff(b,c,d,a,k[11],22,-1990404162);
+    a = ff(a,b,c,d,k[8],7,1770035416);d = ff(d,a,b,c,k[9],12,-1958415817);c = ff(c,d,a,b,k[10],17,-42063);b = ff(b,c,d,a,k[11],22,-1990404162);
     a = ff(a,b,c,d,k[12],7,1804603682);d = ff(d,a,b,c,k[13],12,-40341101);c = ff(c,d,a,b,k[14],17,-1502002290);b = ff(b,c,d,a,k[15],22,1236535329);
     a = gg(a,b,c,d,k[1],5,-165796510);d = gg(d,a,b,c,k[6],9,-1069501632);c = gg(c,d,a,b,k[11],14,643717713);b = gg(b,c,d,a,k[0],20,-373897302);
     a = gg(a,b,c,d,k[5],5,-701558691);d = gg(d,a,b,c,k[10],9,38016083);c = gg(c,d,a,b,k[15],14,-660478335);b = gg(b,c,d,a,k[4],20,-405537848);
     a = gg(a,b,c,d,k[9],5,568446438);d = gg(d,a,b,c,k[14],9,-1019803690);c = gg(c,d,a,b,k[3],14,-187363961);b = gg(b,c,d,a,k[8],20,1163531501);
-    a = gg(a,b,c,d,k[13],5,-1444681467);d = gg(d,a,b,c,k[2],9,-51403784);c = gg(c,d,a,b,k[7],14,1735328473);b = gg(b,c,d,a,k[12],20,-1926607734);
+    a = gg(a,b,c,d,k[13],5,-1584681467);d = gg(d,a,b,c,k[2],9,-51403784);c = gg(c,d,a,b,k[7],14,1735328473);b = gg(b,c,d,a,k[12],20,-1926607734);
     a = hh(a,b,c,d,k[5],4,-378558);d = hh(d,a,b,c,k[8],11,-2022574463);c = hh(c,d,a,b,k[11],16,1839030562);b = hh(b,c,d,a,k[14],23,-35309556);
     a = hh(a,b,c,d,k[1],4,-1530992060);d = hh(d,a,b,c,k[4],11,1272893353);c = hh(c,d,a,b,k[7],16,-155497632);b = hh(b,c,d,a,k[10],23,-1094730640);
     a = hh(a,b,c,d,k[13],4,681279174);d = hh(d,a,b,c,k[0],11,-358537222);c = hh(c,d,a,b,k[3],16,-722521979);b = hh(b,c,d,a,k[6],23,76029189);
