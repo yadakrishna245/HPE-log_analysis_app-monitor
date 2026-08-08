@@ -13,16 +13,26 @@ permissions:
 jobs:
   revoke:
     runs-on: ubuntu-latest
+    env:
+      LICENSE_KEY_INPUT: ${{ github.event.inputs.license_key }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate Input Format
+        run: |
+          # Validate license key format (only alphanumeric + dashes)
+          if ! echo "$LICENSE_KEY_INPUT" | grep -qE '^[A-Z0-9-]{10,30}$'; then
+            echo "❌ Invalid license key format"
+            exit 1
+          fi
+
       - name: Revoke License
         run: |
           python3 << 'EOF'
-          import json
+          import json, os
           
-          key_to_revoke = "${{ github.event.inputs.license_key }}"
+          key_to_revoke = os.environ.get('LICENSE_KEY_INPUT', '')
           
           with open('licenses.json', 'r') as f:
               data = json.load(f)
@@ -51,5 +61,5 @@ jobs:
           git config user.name "License Bot"
           git config user.email "license@logsherlock.pro"
           git add licenses.json
-          git commit -m "🚫 Revoked license: ${{ github.event.inputs.license_key }}"
+          git commit -m "🚫 Revoked license key"
           git push

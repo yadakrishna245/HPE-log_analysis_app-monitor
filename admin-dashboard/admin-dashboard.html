@@ -193,6 +193,10 @@ tr:hover td{background:rgba(1,169,130,0.05)}
       <label>Password</label>
       <input type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
+    <div class="form-group">
+      <label>Admin Secret (API)</label>
+      <input type="password" id="loginAdminSecret" placeholder="Enter admin secret for API access" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
     <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
     <div class="forgot-link"><a onclick="forgotPassword()">Forgot Password?</a></div>
     <div class="login-error" id="loginError">Invalid username or password</div>
@@ -421,7 +425,8 @@ tr:hover td{background:rgba(1,169,130,0.05)}
 const ADMIN_USER = 'krishna';
 const DEFAULT_HASH = 'f4f74f9ec98bebb9600c06ae7318ebfe0b5e10343097033c8c7f2a0c467c4f34';
 const API_URL = 'https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/list-all';
-const ADMIN_SECRET = 'LSPRO2026KRISHNA';
+// Admin secret is entered at login and stored in session only (never hardcoded)
+let ADMIN_SECRET = sessionStorage.getItem('ls_admin_secret') || '';
 let licenseData = [];
 let generatedKeys = [];
 let apiKeyVisible = false;
@@ -500,9 +505,15 @@ function md5(string) {
 async function doLogin() {
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value;
+  const adminSecretInput = document.getElementById('loginAdminSecret') ? document.getElementById('loginAdminSecret').value.trim() : '';
   const hash = await sha256(pass);
   const storedHash = localStorage.getItem('ls_admin_hash') || DEFAULT_HASH;
   if (user === ADMIN_USER && hash === storedHash) {
+    // Store admin secret in sessionStorage (cleared on tab close, never persisted)
+    if (adminSecretInput) {
+      sessionStorage.setItem('ls_admin_secret', adminSecretInput);
+      ADMIN_SECRET = adminSecretInput;
+    }
     localStorage.setItem('ls_admin_session', JSON.stringify({user, ts: Date.now()}));
     showDashboard();
     showToast('Welcome back, ' + user + '!');
@@ -514,6 +525,8 @@ async function doLogin() {
 
 function doLogout() {
   localStorage.removeItem('ls_admin_session');
+  sessionStorage.removeItem('ls_admin_secret');
+  ADMIN_SECRET = '';
   document.getElementById('dashboardPage').style.display = 'none';
   document.getElementById('loginPage').style.display = 'flex';
   showToast('Logged out successfully', 'info');

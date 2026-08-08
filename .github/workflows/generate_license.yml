@@ -30,28 +30,41 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      INPUT_DOMAIN: ${{ github.event.inputs.domain }}
+      INPUT_ISSUED_TO: ${{ github.event.inputs.issued_to }}
+      INPUT_DAYS: ${{ github.event.inputs.days_valid }}
+      INPUT_TYPE: ${{ github.event.inputs.license_type }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate Inputs
+        run: |
+          # Validate domain (alphanumeric, dots, dashes only)
+          if ! echo "$INPUT_DOMAIN" | grep -qE '^[a-zA-Z0-9._-]+$'; then
+            echo "❌ Invalid domain format"
+            exit 1
+          fi
+          # Validate days (numeric only)
+          if ! echo "$INPUT_DAYS" | grep -qE '^[0-9]+$'; then
+            echo "❌ Invalid days value"
+            exit 1
+          fi
+
       - name: Generate License Key
         id: gen
         run: |
-          DOMAIN="${{ github.event.inputs.domain }}"
-          ISSUED_TO="${{ github.event.inputs.issued_to }}"
-          DAYS="${{ github.event.inputs.days_valid }}"
-          TYPE="${{ github.event.inputs.license_type }}"
-          
           python3 << 'EOF'
-          import json
+          import json, os
           import hashlib
           import secrets
           from datetime import datetime, timedelta
           
-          domain = "${{ github.event.inputs.domain }}"
-          issued_to = "${{ github.event.inputs.issued_to }}"
-          days = int("${{ github.event.inputs.days_valid }}")
-          license_type = "${{ github.event.inputs.license_type }}"
+          domain = os.environ.get('INPUT_DOMAIN', 'd3tv1czat55yad.cloudfront.net')
+          issued_to = os.environ.get('INPUT_ISSUED_TO', 'User')
+          days = int(os.environ.get('INPUT_DAYS', '7'))
+          license_type = os.environ.get('INPUT_TYPE', 'standard')
           
           # Load existing licenses
           with open('licenses.json', 'r') as f:
@@ -89,13 +102,6 @@ jobs:
           print(f"👤 Issued to: {issued_to}")
           print(f"📅 Expires: {expires_at}")
           print(f"📋 Type: {license_type}")
-          
-          # Write outputs
-          with open('license_output.txt', 'w') as f:
-              f.write(f"KEY={license_key}\n")
-              f.write(f"DOMAIN={domain}\n")
-              f.write(f"ISSUED_TO={issued_to}\n")
-              f.write(f"EXPIRES={expires_at}\n")
           EOF
 
       - name: Commit Updated Licenses
@@ -103,7 +109,7 @@ jobs:
           git config user.name "License Bot"
           git config user.email "license@logsherlock.pro"
           git add licenses.json
-          git commit -m "🔑 New license: ${{ github.event.inputs.issued_to }} → ${{ github.event.inputs.domain }}"
+          git commit -m "🔑 New license generated for $INPUT_DOMAIN"
           git push
 
       - name: 📧 Email License to Krishna

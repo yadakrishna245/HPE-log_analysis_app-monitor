@@ -19,8 +19,12 @@
 | Field | Value |
 |-------|-------|
 | **Username** | `krishna` |
-| **Password** | `Krishna@8688#$` |
+| **Password** | Stored in password manager (SHA-256 hash in HTML) |
+| **Admin Secret** | Stored as `AdminSecret` parameter in AWS CloudFormation stack (NoEcho) |
 | **Reset Email** | `yadakrishna245@gmail.com` |
+
+> ⚠️ **NEVER commit the admin secret or password as plaintext in any file.**  
+> The admin secret is passed via `--parameter-overrides AdminSecret=<value>` during `sam deploy`.
 
 ---
 
@@ -58,20 +62,20 @@
 ## 🖥️ API Endpoints (Admin Only)
 
 ```bash
-# List ALL users
+# List ALL users (admin_secret from your password manager)
 curl -X POST https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/list-all \
   -H "Content-Type: application/json" \
-  -d '{"admin_secret":"LSPRO2026KRISHNA"}'
+  -d '{"admin_secret":"<YOUR_ADMIN_SECRET>"}'
 
 # Check specific key
 curl -X POST https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/status \
   -H "Content-Type: application/json" \
-  -d '{"license_key":"HTRO-0A25-5B44-00FJ","admin_secret":"LSPRO2026KRISHNA"}'
+  -d '{"license_key":"HTRO-0A25-5B44-00FJ","admin_secret":"<YOUR_ADMIN_SECRET>"}'
 
 # Reset key (allow transfer)
 curl -X POST https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/license/reset \
   -H "Content-Type: application/json" \
-  -d '{"license_key":"HTRO-0A25-5B44-00FJ","admin_secret":"LSPRO2026KRISHNA"}'
+  -d '{"license_key":"HTRO-0A25-5B44-00FJ","admin_secret":"<YOUR_ADMIN_SECRET>"}'
 ```
 
 ---
@@ -90,10 +94,11 @@ curl -X POST https://5bruz4e6hj.execute-api.us-east-1.amazonaws.com/prod/api/lic
 ## ⚠️ Security Notes
 
 1. Admin dashboard is NOT accessible to your team
-2. The `admin_secret` (`LSPRO2026KRISHNA`) is only in this private repo
+2. The `admin_secret` is stored ONLY in AWS (CloudFormation NoEcho parameter)
 3. Password hash is stored in the HTML (SHA-256) — not plain text
 4. Even if someone finds the admin URL, they need the password
 5. API endpoints require `admin_secret` — team can't query license data
+6. **NEVER** put the admin secret value in any committed file
 
 ---
 

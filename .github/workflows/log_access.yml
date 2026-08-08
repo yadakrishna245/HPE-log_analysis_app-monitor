@@ -10,6 +10,16 @@ permissions:
 jobs:
   log-access:
     runs-on: ubuntu-latest
+    env:
+      EVENT_TYPE: ${{ github.event.action }}
+      PAYLOAD_DOMAIN: ${{ github.event.client_payload.domain }}
+      PAYLOAD_USER_NAME: ${{ github.event.client_payload.user_name }}
+      PAYLOAD_TIMESTAMP: ${{ github.event.client_payload.timestamp }}
+      PAYLOAD_USER_AGENT: ${{ github.event.client_payload.user_agent }}
+      PAYLOAD_PAGE_URL: ${{ github.event.client_payload.page_url }}
+      PAYLOAD_EMAIL: ${{ github.event.client_payload.email }}
+      PAYLOAD_MOBILE: ${{ github.event.client_payload.mobile }}
+      PAYLOAD_LICENSE_KEY: ${{ github.event.client_payload.license_key }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,54 +27,44 @@ jobs:
       - name: Process Ping
         id: process
         run: |
-          EVENT_TYPE="${{ github.event.action }}"
-          DOMAIN="${{ github.event.client_payload.domain }}"
-          USER_NAME="${{ github.event.client_payload.user_name }}"
-          TIMESTAMP="${{ github.event.client_payload.timestamp }}"
-          USER_AGENT="${{ github.event.client_payload.user_agent }}"
-          PAGE_URL="${{ github.event.client_payload.page_url }}"
-          EMAIL="${{ github.event.client_payload.email }}"
-          MOBILE="${{ github.event.client_payload.mobile }}"
-          LICENSE_KEY="${{ github.event.client_payload.license_key }}"
+          echo "📍 Event: $EVENT_TYPE from: $PAYLOAD_DOMAIN"
+          echo "👤 User: $PAYLOAD_USER_NAME ($PAYLOAD_EMAIL)"
           
-          echo "📍 Event: $EVENT_TYPE from: $DOMAIN"
-          echo "👤 User: $USER_NAME ($EMAIL)"
-          
-          # Check if domain is authorized
+          # Check if domain is authorized (using env vars safely)
           AUTHORIZED=$(python3 -c "
-          import json
+          import json, os
           with open('authorized_domains.json') as f:
               data = json.load(f)
-          domain = '$DOMAIN'
+          domain = os.environ.get('PAYLOAD_DOMAIN', '')
           print('true' if domain in data['authorized_domains'] else 'false')
           ")
           
           echo "authorized=$AUTHORIZED" >> $GITHUB_OUTPUT
-          echo "domain=$DOMAIN" >> $GITHUB_OUTPUT
-          echo "user_name=$USER_NAME" >> $GITHUB_OUTPUT
-          echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
-          echo "email=$EMAIL" >> $GITHUB_OUTPUT
+          echo "domain=$PAYLOAD_DOMAIN" >> $GITHUB_OUTPUT
+          echo "user_name=$PAYLOAD_USER_NAME" >> $GITHUB_OUTPUT
+          echo "timestamp=$PAYLOAD_TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "email=$PAYLOAD_EMAIL" >> $GITHUB_OUTPUT
           echo "event_type=$EVENT_TYPE" >> $GITHUB_OUTPUT
           
-          # Update access log
+          # Update access log (using env vars - no injection possible)
           python3 << 'EOF'
-          import json
+          import json, os
           from datetime import datetime
           
           with open('access_log.json', 'r') as f:
               log = json.load(f)
           
           event = {
-              "domain": "${{ github.event.client_payload.domain }}",
-              "user_name": "${{ github.event.client_payload.user_name }}",
-              "email": "${{ github.event.client_payload.email }}",
-              "mobile": "${{ github.event.client_payload.mobile }}",
-              "timestamp": "${{ github.event.client_payload.timestamp }}",
-              "user_agent": "${{ github.event.client_payload.user_agent }}",
-              "page_url": "${{ github.event.client_payload.page_url }}",
-              "license_key": "${{ github.event.client_payload.license_key }}",
-              "event_type": "${{ github.event.action }}",
-              "authorized": "$AUTHORIZED" == "true",
+              "domain": os.environ.get('PAYLOAD_DOMAIN', ''),
+              "user_name": os.environ.get('PAYLOAD_USER_NAME', ''),
+              "email": os.environ.get('PAYLOAD_EMAIL', ''),
+              "mobile": os.environ.get('PAYLOAD_MOBILE', ''),
+              "timestamp": os.environ.get('PAYLOAD_TIMESTAMP', ''),
+              "user_agent": os.environ.get('PAYLOAD_USER_AGENT', ''),
+              "page_url": os.environ.get('PAYLOAD_PAGE_URL', ''),
+              "license_key": os.environ.get('PAYLOAD_LICENSE_KEY', ''),
+              "event_type": os.environ.get('EVENT_TYPE', ''),
+              "authorized": os.environ.get('AUTHORIZED', 'false') == 'true',
               "logged_at": datetime.utcnow().isoformat() + "Z"
           }
           
@@ -82,24 +82,23 @@ jobs:
           # If user_registered event, also save to user_registrations.json
           if [ "$EVENT_TYPE" = "user_registered" ]; then
             python3 << 'EOF2'
-          import json
+          import json, os
           from datetime import datetime
           
-          # Update JSON
           with open('user_registrations.json', 'r') as f:
               reg = json.load(f)
           
-          email = "${{ github.event.client_payload.email }}"
+          email = os.environ.get('PAYLOAD_EMAIL', '')
           existing = [r for r in reg["registrations"] if r.get("email") == email]
           
           if not existing:
               reg["registrations"].append({
-                  "name": "${{ github.event.client_payload.user_name }}",
+                  "name": os.environ.get('PAYLOAD_USER_NAME', ''),
                   "email": email,
-                  "mobile": "${{ github.event.client_payload.mobile }}",
-                  "domain": "${{ github.event.client_payload.domain }}",
-                  "license_key": "${{ github.event.client_payload.license_key }}",
-                  "registered_at": "${{ github.event.client_payload.timestamp }}",
+                  "mobile": os.environ.get('PAYLOAD_MOBILE', ''),
+                  "domain": os.environ.get('PAYLOAD_DOMAIN', ''),
+                  "license_key": os.environ.get('PAYLOAD_LICENSE_KEY', ''),
+                  "registered_at": os.environ.get('PAYLOAD_TIMESTAMP', ''),
                   "logged_at": datetime.utcnow().isoformat() + "Z"
               })
               reg["total_users"] = len(reg["registrations"])
@@ -128,7 +127,7 @@ jobs:
           git config user.name "Access Monitor Bot"
           git config user.email "monitor@logsherlock.pro"
           git add access_log.json user_registrations.json USERS.md
-          git diff --staged --quiet || git commit -m "📍 ${{ github.event.action }}: ${{ steps.process.outputs.user_name }} from ${{ steps.process.outputs.domain }}"
+          git diff --staged --quiet || git commit -m "📍 access event: ${{ steps.process.outputs.user_name }} from ${{ steps.process.outputs.domain }}"
           git push
 
       - name: 🚨 Send Gmail Alert (Unauthorized)
@@ -149,7 +148,6 @@ jobs:
             👤 User: ${{ steps.process.outputs.user_name }}
             📧 Email: ${{ steps.process.outputs.email }}
             🕐 Time: ${{ steps.process.outputs.timestamp }}
-            🔗 URL: ${{ github.event.client_payload.page_url }}
             
             ACTION: Check who deployed your code without permission.
             
@@ -171,9 +169,7 @@ jobs:
             
             👤 Name: ${{ steps.process.outputs.user_name }}
             📧 Email: ${{ steps.process.outputs.email }}
-            📱 Mobile: ${{ github.event.client_payload.mobile }}
             🌐 Domain: ${{ steps.process.outputs.domain }}
-            🔑 License: ${{ github.event.client_payload.license_key }}
             🕐 Time: ${{ steps.process.outputs.timestamp }}
             
             — LogSherlock License System
