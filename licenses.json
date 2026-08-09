@@ -7,7 +7,8 @@
       "issued_at": "2026-08-04",
       "expires_at": "2099-12-31",
       "type": "master",
-      "active": true
+      "active": true,
+      "fingerprint": ""
     },
     {
       "key": "LS-MASTER-LOCALHOST-DEV",
@@ -16,7 +17,8 @@
       "issued_at": "2026-08-04",
       "expires_at": "2099-12-31",
       "type": "master",
-      "active": true
+      "active": true,
+      "fingerprint": ""
     },
     {
       "key": "LS-727A-A1E2-F02A-54DF",
