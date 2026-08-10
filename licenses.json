@@ -239,6 +239,17 @@
       "days": "lifetime",
       "fingerprint": "",
       "note": "Lifetime access"
+    },
+    {
+      "key": "LS-WIPRO-DNR-L4-2026",
+      "issued_to": "DNR",
+      "issued_at": "2026-08-10",
+      "expires_at": "2026-11-08",
+      "type": "master",
+      "active": true,
+      "days": "90",
+      "fingerprint": "",
+      "note": "90-day access"
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
