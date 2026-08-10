@@ -22,7 +22,7 @@
     },
     {
       "key": "LS-PRO-USER-01-HPE",
-      "issued_to": "",
+      "issued_to": "DNR",
       "issued_at": "2026-08-10",
       "expires_at": "2026-08-17",
       "type": "standard",
