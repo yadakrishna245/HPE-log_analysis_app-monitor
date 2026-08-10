@@ -56,6 +56,7 @@ jobs:
               key_type = 'standard' if days <= 30 else 'master'
 
           issued_at = datetime.now().strftime('%Y-%m-%d')
+          registered_at = datetime.now().strftime('%d/%m/%Y, %I:%M:%S %p IST')
 
           # Generate key
           if custom_key:
@@ -94,9 +95,38 @@ jobs:
           data['licenses'].append(new_entry)
           data['last_updated'] = issued_at
 
-          # Save
+          # Save licenses.json
           with open('licenses.json', 'w') as f:
               json.dump(data, f, indent=2)
+
+          # Update Users_data_Logsherlockpro_Local.md
+          md_file = 'Users_data_Logsherlockpro_Local.md'
+          with open(md_file, 'r') as f:
+              content = f.read()
+
+          # Count existing users
+          rows = [l for l in content.split('\n') if l.startswith('|') and not l.startswith('| #') and not l.startswith('|---')]
+          user_count = len(rows)
+          new_num = user_count + 1
+
+          # Status
+          status = '✅ Active'
+
+          # Build new row
+          new_row = f'| {new_num} | {user_name} | {license_key} | {days_input} | {expires_at} | {status} | {registered_at} |'
+
+          # Insert row before the --- line
+          lines = content.split('\n')
+          new_lines = []
+          for line in lines:
+              if line.startswith('---'):
+                  new_lines.append(new_row)
+              if line.startswith('**Total Users:'):
+                  line = f'**Total Users: {new_num}** | *Auto-updated by GitHub Actions*'
+              new_lines.append(line)
+
+          with open(md_file, 'w') as f:
+              f.write('\n'.join(new_lines))
 
           # Output summary
           print(f'')
@@ -125,6 +155,6 @@ jobs:
         run: |
           git config user.name "License Bot"
           git config user.email "license@logsherlock.pro"
-          git add licenses.json
+          git add licenses.json Users_data_Logsherlockpro_Local.md
           git commit -m "🔑 License generated for ${{ github.event.inputs.user_name }} (${{ github.event.inputs.days }} days)"
           git push
