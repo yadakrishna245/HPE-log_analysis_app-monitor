@@ -1,0 +1,138 @@
+name: ✏️ Update License (Change Days/Revoke)
+
+on:
+  workflow_dispatch:
+    inputs:
+      license_key:
+        description: 'License key to update (e.g., LA-WIPRO-DNR-L4-2026)'
+        required: true
+      action:
+        description: 'What to do'
+        required: true
+        type: choice
+        options:
+          - 'change_days'
+          - 'revoke'
+          - 'reactivate'
+      new_days:
+        description: 'New duration (only for change_days): 7, 20, 30, 90, 365, lifetime'
+        required: false
+        default: '365'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update License
+        run: |
+          python3 << 'EOF'
+          import json, os
+          from datetime import datetime, timedelta
+
+          key = os.environ.get('INPUT_KEY', '').strip().upper()
+          action = os.environ.get('INPUT_ACTION', '').strip()
+          new_days_input = os.environ.get('INPUT_DAYS', '365').strip()
+
+          # Load licenses.json
+          with open('licenses.json', 'r') as f:
+              data = json.load(f)
+
+          # Find the license
+          found = None
+          for i, lic in enumerate(data['licenses']):
+              if lic['key'].upper() == key:
+                  found = i
+                  break
+
+          if found is None:
+              print(f'❌ ERROR: Key "{key}" not found in licenses.json!')
+              exit(1)
+
+          entry = data['licenses'][found]
+          today = datetime.now().strftime('%Y-%m-%d')
+
+          if action == 'change_days':
+              if new_days_input == 'lifetime':
+                  entry['days'] = 'lifetime'
+                  entry['expires_at'] = '2099-12-31'
+                  entry['type'] = 'master'
+                  entry['note'] = 'Lifetime access'
+              else:
+                  new_days = int(new_days_input)
+                  entry['days'] = str(new_days)
+                  entry['expires_at'] = (datetime.now() + timedelta(days=new_days)).strftime('%Y-%m-%d')
+                  entry['type'] = 'standard' if new_days <= 30 else 'master'
+                  entry['note'] = f'{new_days}-day access'
+              entry['active'] = True
+              print(f'✅ Updated {key}')
+              print(f'   New duration: {new_days_input} days')
+              print(f'   New expiry: {entry["expires_at"]}')
+
+          elif action == 'revoke':
+              entry['active'] = False
+              entry['revoked_at'] = today
+              print(f'🚫 Revoked {key}')
+              print(f'   User: {entry.get("issued_to", "Unknown")}')
+              print(f'   Revoked on: {today}')
+
+          elif action == 'reactivate':
+              entry['active'] = True
+              if 'revoked_at' in entry:
+                  del entry['revoked_at']
+              print(f'✅ Reactivated {key}')
+              print(f'   User: {entry.get("issued_to", "Unknown")}')
+
+          data['licenses'][found] = entry
+          data['last_updated'] = today
+
+          # Save licenses.json
+          with open('licenses.json', 'w') as f:
+              json.dump(data, f, indent=2)
+
+          # Update tracking MD file
+          md_file = 'Users_data_Logsherlockpro_Local.md'
+          try:
+              with open(md_file, 'r') as f:
+                  content = f.read()
+
+              lines = content.split('\n')
+              new_lines = []
+              for line in lines:
+                  if key in line:
+                      parts = line.split('|')
+                      if len(parts) >= 7:
+                          if action == 'change_days':
+                              parts[4] = f' {new_days_input} '
+                              parts[5] = f' {entry["expires_at"]} '
+                              parts[6] = ' ✅ Active '
+                          elif action == 'revoke':
+                              parts[6] = ' ❌ Revoked '
+                          elif action == 'reactivate':
+                              parts[6] = ' ✅ Active '
+                          line = '|'.join(parts)
+                  new_lines.append(line)
+
+              with open(md_file, 'w') as f:
+                  f.write('\n'.join(new_lines))
+          except Exception as e:
+              print(f'⚠️ Could not update tracking file: {e}')
+
+          EOF
+        env:
+          INPUT_KEY: ${{ github.event.inputs.license_key }}
+          INPUT_ACTION: ${{ github.event.inputs.action }}
+          INPUT_DAYS: ${{ github.event.inputs.new_days }}
+
+      - name: Commit & Push
+        run: |
+          git config user.name "License Bot"
+          git config user.email "license@logsherlock.pro"
+          git add licenses.json Users_data_Logsherlockpro_Local.md
+          git commit -m "✏️ License ${{ github.event.inputs.action }}: ${{ github.event.inputs.license_key }}"
+          git push
