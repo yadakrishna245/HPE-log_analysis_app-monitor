@@ -99,7 +99,7 @@ jobs:
                   content = f.read()
               rows = [l for l in content.split('\n') if l.startswith('|') and not l.startswith('| #') and not l.startswith('|---')]
               new_num = len(rows) + 1
-              new_row = f'| {new_num} | {user_name} | {license_key} | {days_val} | {expires_at} | ✅ Active | {registered_at} |'
+              new_row = f'| {new_num} | {user_name} | {license_key} | {days_val} | — | {expires_at} | ✅ Active | {registered_at} |'
               lines = content.split('\n')
               new_lines = []
               for line in lines:
@@ -163,10 +163,11 @@ jobs:
                   for line in lines:
                       if entry['key'] in line:
                           parts = line.split('|')
-                          if len(parts) >= 7:
-                              parts[4] = f' {days_val} '
-                              parts[5] = f' {expires_at} '
-                              parts[6] = ' ✅ Active '
+                          if len(parts) >= 9:
+                              # parts: empty, #, Name, Key, Initial Days, Upgraded To, Expires, Status, Registered At, empty
+                              parts[5] = f' {days_val} days '
+                              parts[6] = f' {expires_at} '
+                              parts[7] = ' ✅ Active '
                               line = '|'.join(parts)
                       new_lines.append(line)
                   with open(md_file, 'w') as f:
@@ -212,8 +213,8 @@ jobs:
                   for line in lines:
                       if entry['key'] in line:
                           parts = line.split('|')
-                          if len(parts) >= 7:
-                              parts[6] = ' ❌ Revoked '
+                          if len(parts) >= 9:
+                              parts[7] = ' ❌ Revoked '
                               line = '|'.join(parts)
                       new_lines.append(line)
                   with open(md_file, 'w') as f:
@@ -258,8 +259,8 @@ jobs:
                   for line in lines:
                       if entry['key'] in line:
                           parts = line.split('|')
-                          if len(parts) >= 7:
-                              parts[6] = ' ✅ Active '
+                          if len(parts) >= 9:
+                              parts[7] = ' ✅ Active '
                               line = '|'.join(parts)
                       new_lines.append(line)
                   with open(md_file, 'w') as f:
