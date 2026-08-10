@@ -27,7 +27,7 @@
       "expires_at": "2026-08-17",
       "type": "standard",
       "active": false,
-      "days": 7,
+      "days": 90,
       "fingerprint": "",
       "note": "7-day trial"
     },
