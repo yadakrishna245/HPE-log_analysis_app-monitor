@@ -250,6 +250,17 @@
       "days": "90",
       "fingerprint": "",
       "note": "90-day access"
+    },
+    {
+      "key": "LS-PRO-T-F3CE-2026",
+      "issued_to": "test",
+      "issued_at": "2026-08-10",
+      "expires_at": "2026-08-17",
+      "type": "standard",
+      "active": true,
+      "days": "7",
+      "fingerprint": "",
+      "note": "7-day access"
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
