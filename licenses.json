@@ -24,12 +24,12 @@
       "key": "E",
       "issued_to": "DNR",
       "issued_at": "2026-08-10",
-      "expires_at": "2026-08-17",
+      "expires_at": "2026-09-09",
       "type": "standard",
-      "active": false,
-      "days": 90,
+      "active": true,
+      "days": "30",
       "fingerprint": "",
-      "note": "7-day trial"
+      "note": "30-day access"
     },
     {
       "key": "LS-PRO-USER-02-HPE",
