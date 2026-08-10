@@ -261,6 +261,17 @@
       "days": "7",
       "fingerprint": "",
       "note": "7-day access"
+    },
+    {
+      "key": "LA-WIPRO-DNR-L4-2026",
+      "issued_to": "DNR",
+      "issued_at": "2026-08-10",
+      "expires_at": "2026-08-17",
+      "type": "standard",
+      "active": true,
+      "days": "7",
+      "fingerprint": "",
+      "note": "7-day access"
     }
   ],
   "secret_salt": "KY_LOGSHERLOCK_2026_WIPRO_SENIOR_TECH_LEAD",
