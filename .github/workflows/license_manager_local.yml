@@ -1,0 +1,291 @@
+name: 🔑 License Manager (Local ZIP)
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'What to do'
+        required: true
+        type: choice
+        options:
+          - '🆕 Generate New Key'
+          - '✏️ Change Days'
+          - '🚫 Revoke'
+          - '✅ Reactivate'
+      user_name:
+        description: 'User name (required for Generate, or enter existing user name for Update)'
+        required: true
+      days:
+        description: 'Duration: 7, 20, 30, 90, 365, lifetime'
+        required: false
+        default: '30'
+      custom_key:
+        description: 'Custom key (optional for Generate, e.g., LS-HPE-RAHUL-L4-2026)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  manage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Manage License
+        run: |
+          python3 << 'EOF'
+          import json, os, secrets
+          from datetime import datetime, timedelta
+
+          action = os.environ.get('INPUT_ACTION', '').strip()
+          user_name = os.environ.get('INPUT_USER', '').strip()
+          days_input = os.environ.get('INPUT_DAYS', '30').strip()
+          custom_key = os.environ.get('INPUT_KEY', '').strip()
+
+          # Load licenses.json
+          with open('licenses.json', 'r') as f:
+              data = json.load(f)
+
+          today = datetime.now().strftime('%Y-%m-%d')
+          registered_at = datetime.now().strftime('%d/%m/%Y, %I:%M:%S %p IST')
+
+          # Calculate expiry
+          def calc_expiry(d):
+              if d == 'lifetime':
+                  return '2099-12-31', 'lifetime', 'master', 'Lifetime access'
+              days = int(d)
+              exp = (datetime.now() + timedelta(days=days)).strftime('%Y-%m-%d')
+              ktype = 'standard' if days <= 30 else 'master'
+              return exp, d, ktype, f'{days}-day access'
+
+          # ═══════════════════════════════════════
+          if '🆕' in action or 'Generate' in action:
+              # GENERATE NEW KEY
+              expires_at, days_val, key_type, note = calc_expiry(days_input)
+
+              if custom_key:
+                  license_key = custom_key.upper().replace(' ', '-')
+                  if len(license_key.split('-')) < 5:
+                      license_key = license_key + '-HPE'
+              else:
+                  initials = ''.join([w[0] for w in user_name.split() if w]).upper()[:4]
+                  rand = secrets.token_hex(2).upper()
+                  license_key = f'LS-PRO-{initials}-{rand}-2026'
+
+              # Check duplicate
+              if any(l['key'].upper() == license_key for l in data['licenses']):
+                  print(f'❌ ERROR: Key {license_key} already exists!')
+                  exit(1)
+
+              new_entry = {
+                  "key": license_key,
+                  "issued_to": user_name,
+                  "issued_at": today,
+                  "expires_at": expires_at,
+                  "type": key_type,
+                  "active": True,
+                  "days": days_val,
+                  "fingerprint": "",
+                  "note": note
+              }
+              data['licenses'].append(new_entry)
+
+              # Update tracking MD
+              md_file = 'Users_data_Logsherlockpro_Local.md'
+              with open(md_file, 'r') as f:
+                  content = f.read()
+              rows = [l for l in content.split('\n') if l.startswith('|') and not l.startswith('| #') and not l.startswith('|---')]
+              new_num = len(rows) + 1
+              new_row = f'| {new_num} | {user_name} | {license_key} | {days_val} | {expires_at} | ✅ Active | {registered_at} |'
+              lines = content.split('\n')
+              new_lines = []
+              for line in lines:
+                  if line.startswith('---'):
+                      new_lines.append(new_row)
+                  if line.startswith('**Total Users:'):
+                      line = f'**Total Users: {new_num}** | *Auto-updated by GitHub Actions*'
+                  new_lines.append(line)
+              with open(md_file, 'w') as f:
+                  f.write('\n'.join(new_lines))
+
+              print(f'')
+              print(f'╔══════════════════════════════════════════════════╗')
+              print(f'║   🆕 LICENSE KEY GENERATED                        ║')
+              print(f'╠══════════════════════════════════════════════════╣')
+              print(f'║  Key:      {license_key}')
+              print(f'║  User:     {user_name}')
+              print(f'║  Days:     {days_val}')
+              print(f'║  Expires:  {expires_at}')
+              print(f'╠══════════════════════════════════════════════════╣')
+              print(f'║  📋 Share ZIP + key with user                    ║')
+              print(f'╚══════════════════════════════════════════════════╝')
+
+          # ═══════════════════════════════════════
+          elif '✏️' in action or 'Change' in action:
+              # CHANGE DAYS — find by user name
+              found = None
+              for i, lic in enumerate(data['licenses']):
+                  if lic.get('issued_to', '').lower() == user_name.lower():
+                      found = i
+                      break
+
+              if found is None:
+                  # Try by key
+                  for i, lic in enumerate(data['licenses']):
+                      if lic['key'].upper() == user_name.upper():
+                          found = i
+                          break
+
+              if found is None:
+                  print(f'❌ ERROR: No license found for "{user_name}"')
+                  print(f'   Tip: Enter the user name or the license key')
+                  exit(1)
+
+              entry = data['licenses'][found]
+              expires_at, days_val, key_type, note = calc_expiry(days_input)
+              entry['days'] = days_val
+              entry['expires_at'] = expires_at
+              entry['type'] = key_type
+              entry['note'] = note
+              entry['active'] = True
+              data['licenses'][found] = entry
+
+              # Update tracking MD
+              md_file = 'Users_data_Logsherlockpro_Local.md'
+              try:
+                  with open(md_file, 'r') as f:
+                      content = f.read()
+                  lines = content.split('\n')
+                  new_lines = []
+                  for line in lines:
+                      if entry['key'] in line:
+                          parts = line.split('|')
+                          if len(parts) >= 7:
+                              parts[4] = f' {days_val} '
+                              parts[5] = f' {expires_at} '
+                              parts[6] = ' ✅ Active '
+                              line = '|'.join(parts)
+                      new_lines.append(line)
+                  with open(md_file, 'w') as f:
+                      f.write('\n'.join(new_lines))
+              except:
+                  pass
+
+              print(f'✅ Updated: {entry["key"]}')
+              print(f'   User: {entry["issued_to"]}')
+              print(f'   New days: {days_val}')
+              print(f'   New expiry: {expires_at}')
+
+          # ═══════════════════════════════════════
+          elif '🚫' in action or 'Revoke' in action:
+              # REVOKE — find by user name or key
+              found = None
+              for i, lic in enumerate(data['licenses']):
+                  if lic.get('issued_to', '').lower() == user_name.lower():
+                      found = i
+                      break
+              if found is None:
+                  for i, lic in enumerate(data['licenses']):
+                      if lic['key'].upper() == user_name.upper():
+                          found = i
+                          break
+
+              if found is None:
+                  print(f'❌ ERROR: No license found for "{user_name}"')
+                  exit(1)
+
+              entry = data['licenses'][found]
+              entry['active'] = False
+              entry['revoked_at'] = today
+              data['licenses'][found] = entry
+
+              # Update tracking MD
+              md_file = 'Users_data_Logsherlockpro_Local.md'
+              try:
+                  with open(md_file, 'r') as f:
+                      content = f.read()
+                  lines = content.split('\n')
+                  new_lines = []
+                  for line in lines:
+                      if entry['key'] in line:
+                          parts = line.split('|')
+                          if len(parts) >= 7:
+                              parts[6] = ' ❌ Revoked '
+                              line = '|'.join(parts)
+                      new_lines.append(line)
+                  with open(md_file, 'w') as f:
+                      f.write('\n'.join(new_lines))
+              except:
+                  pass
+
+              print(f'🚫 Revoked: {entry["key"]}')
+              print(f'   User: {entry["issued_to"]}')
+
+          # ═══════════════════════════════════════
+          elif '✅' in action or 'Reactivate' in action:
+              # REACTIVATE
+              found = None
+              for i, lic in enumerate(data['licenses']):
+                  if lic.get('issued_to', '').lower() == user_name.lower():
+                      found = i
+                      break
+              if found is None:
+                  for i, lic in enumerate(data['licenses']):
+                      if lic['key'].upper() == user_name.upper():
+                          found = i
+                          break
+
+              if found is None:
+                  print(f'❌ ERROR: No license found for "{user_name}"')
+                  exit(1)
+
+              entry = data['licenses'][found]
+              entry['active'] = True
+              if 'revoked_at' in entry:
+                  del entry['revoked_at']
+              data['licenses'][found] = entry
+
+              # Update tracking MD
+              md_file = 'Users_data_Logsherlockpro_Local.md'
+              try:
+                  with open(md_file, 'r') as f:
+                      content = f.read()
+                  lines = content.split('\n')
+                  new_lines = []
+                  for line in lines:
+                      if entry['key'] in line:
+                          parts = line.split('|')
+                          if len(parts) >= 7:
+                              parts[6] = ' ✅ Active '
+                              line = '|'.join(parts)
+                      new_lines.append(line)
+                  with open(md_file, 'w') as f:
+                      f.write('\n'.join(new_lines))
+              except:
+                  pass
+
+              print(f'✅ Reactivated: {entry["key"]}')
+              print(f'   User: {entry["issued_to"]}')
+
+          # Save licenses.json
+          data['last_updated'] = today
+          with open('licenses.json', 'w') as f:
+              json.dump(data, f, indent=2)
+
+          EOF
+        env:
+          INPUT_ACTION: ${{ github.event.inputs.action }}
+          INPUT_USER: ${{ github.event.inputs.user_name }}
+          INPUT_DAYS: ${{ github.event.inputs.days }}
+          INPUT_KEY: ${{ github.event.inputs.custom_key }}
+
+      - name: Commit & Push
+        run: |
+          git config user.name "License Bot"
+          git config user.email "license@logsherlock.pro"
+          git add licenses.json Users_data_Logsherlockpro_Local.md
+          git commit -m "🔑 ${{ github.event.inputs.action }} — ${{ github.event.inputs.user_name }}"
+          git push
