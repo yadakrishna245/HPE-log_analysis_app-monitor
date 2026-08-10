@@ -3,7 +3,7 @@
 | # | Name | License Key | Initial Days | Upgraded To | Expires | Status | Registered At |
 |---|------|-------------|:------------:|:-----------:|---------|--------|---------------|
 | 1 | test | LS-PRO-T-F3CE-2026 | 7 | — | 2026-08-17 | ✅ Active | 10/08/2026, 08:33:31 AM IST |
-| 2 | DNR | LA-WIPRO-DNR-L4-2026 | 7 | 30 days | 2026-09-09 | ✅ Active | 10/08/2026, 08:37:38 AM IST |
+| 2 | DNR | LA-WIPRO-DNR-L4-2026 | 7 | 365 days | 2027-08-10 | ✅ Active | 10/08/2026, 08:37:38 AM IST |
 
 ---
 
